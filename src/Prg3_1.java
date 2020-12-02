@@ -18,19 +18,20 @@ Prg3-1 CRC
  */
 public class Prg3_1
 {
-    //最多允许输入31位
     class Generator
     {
         String work(String mess, String polynomial)
         {
-            //Todo
+
         }
     }
-    private long bits2Int(String str)
+
+    String xor(String s1, String s2)
     {
-        long ret = 0;
-        for(int i = 0; i < str.length(); i++)
-            ret = (ret << 1) + str.charAt(i) - '0';
-        return ret;
+
+    }
+    String mod(String s1, String s2)
+    {
+
     }
 }
