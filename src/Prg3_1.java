@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /*
 Prg3-1 CRC
  The goal of this lab exercise is to implement an error-detection mechanism using the standard
@@ -24,14 +26,20 @@ public class Prg3_1
         String work(String mess, String polynomial)
         {
             //Todo
-            return mess;
         }
     }
-    private long bits2Int(String str)
+    private String xor(String s1, String s2)
     {
-        long ret = 0;
-        for(int i = 0; i < str.length(); i++)
-            ret = (ret << 1) + str.charAt(i) - '0';
-        return ret;
+        if(s1.length() < s2.length())
+        {
+            String tmp = s1;
+            s1 = s2; s2 = tmp;
+        }
+        s2 = Arrays.toString((new byte[s1.length() - s2.length()])) + s2;
+        byte[] b1 = s1.getBytes();
+        byte[] b2 = s2.getBytes();
+        for(int i = 0; i < b1.length; i++)
+            b1[i] = (byte)(b1[i] ^ b2[i]);
+        return Arrays.toString(b1);
     }
 }
