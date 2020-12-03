@@ -4,6 +4,7 @@ public class Main
     {
         //Prg1_1.applicationLayerFunction("HWQ");
 
+        /*
         Prg3_1 prg3_1 = new Prg3_1();
         Prg3_1.Generator generator = prg3_1.new Generator();
         Prg3_1.Alter alter = prg3_1.new Alter();
@@ -13,5 +14,9 @@ public class Main
         mess = generator.work(mess, polynomial);
         //mess = alter.work(mess);
         System.out.println(verifier.work(mess,polynomial));
+        */
+
+        Prg4_1 prg4_1 = new Prg4_1();
+        prg4_1.work(2);
     }
 }
