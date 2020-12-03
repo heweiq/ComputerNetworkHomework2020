@@ -9,7 +9,31 @@ Prg5-1 flooding
  */
 public class Prg5_1
 {
-    public static void init()
+    private int N; //表示点的数量
+    private int tot; //邻接表边数
+    private int[] first, next, to; //邻接表
+    public Prg5_1(int n)
+    {
+        N = n;
+        tot = 2; //从2开始计数，避开first的初值0
+        first = new int[n];
+        next = new int[n * (n - 1) << 1];
+    }
+    //单向边
+    private void add(int u, int v)
+    {
+        to[tot] = v;
+        next[tot] = first[u];
+        first[u] = tot++;
+    }
+    //双向边
+    public void addEdge(int u, int v)
+    {
+        add(u, v);
+        add(v, u);
+    }
+    //1. all lines are flooded
+    public void flood1()
     {
 
     }
