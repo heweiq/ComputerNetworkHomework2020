@@ -21,6 +21,17 @@ public class Main
         prg4_1.work(2);
         */
 
+        Prg5_1 prg5_1 = new Prg5_1(5);
+        prg5_1.addEdge(1,2);
+        prg5_1.addEdge(2,3);
+        prg5_1.addEdge(3,4);
+        prg5_1.addEdge(2,4);
+        prg5_1.addEdge(4,5);
+        prg5_1.Floyed();
+        System.out.println(prg5_1.flood1(4,1,5));
+        System.out.println(prg5_1.flood2(4,1,5));
+        System.out.println(prg5_1.flood3(4,1,5,1));
+
         //System.out.println(Prg5_3.route("192.24.127.2"));
     }
 }

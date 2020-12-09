@@ -1,9 +1,9 @@
-/*
- Prg5-3 Do forwarding in an IP router
- Write a function to do forwarding in an IP router. The procedure has one parameter, an IP
- address. It also has access to a global table consisting of an array of triples. Each triple
- contains three integers: an IP address, a subnet mask, and the outline line to use. The function
- looks up the IP address in the table using CIDR and returns the line to use as its value.
+/**
+ *  Prg5-3 Do forwarding in an IP router
+ *  Write a function to do forwarding in an IP router. The procedure has one parameter, an IP
+ *  address. It also has access to a global table consisting of an array of triples. Each triple
+ *  contains three integers: an IP address, a subnet mask, and the outline line to use. The function
+ *  looks up the IP address in the table using CIDR and returns the line to use as its value.
  */
 public class Prg5_3
 {
