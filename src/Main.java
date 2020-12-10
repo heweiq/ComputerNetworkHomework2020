@@ -35,6 +35,8 @@ public class Main
         */
 
         Prg5_2 prg5_2 = new Prg5_2(10,5);
+        System.out.println(prg5_2.getEverysum());
+        System.out.println(prg5_2.getEverysuc());
 
         //System.out.println(Prg5_3.route("192.24.127.2"));
     }

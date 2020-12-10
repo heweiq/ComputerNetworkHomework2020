@@ -27,6 +27,7 @@ class Prg5_2
     private int Siz; //表示buffer的最大容量
     private int tot; //邻接表边数
     private int[] first, next, to; //邻接表
+    private int[] everysum, everysuc; //每个时刻的sum和suc
     class Packet
     {
         int s,t,ttl;
@@ -49,6 +50,8 @@ class Prg5_2
         for(int i = 0; i <= n; i++)
             buffer.add(new ArrayList<>());
     }
+    public int[] getEverysum() {return everysum;}
+    public int[] getEverysuc() {return everysum;}
     //单向边
     private void add(int u, int v)
     {
@@ -84,6 +87,8 @@ class Prg5_2
     {
         int sum = 0; //表示包的总数
         int suc = 0; //表示成功到达的包的总数
+        everysum = new int[T + 1];
+        everysuc = new int[T + 1];
         Random random = new Random();
         for(int t = 0; t < T; t++)
         {
@@ -113,6 +118,8 @@ class Prg5_2
                     addPacketInBuffer(packet, v);
                 }
             }
+            everysum[t] = sum;
+            everysuc[t] = suc;
         }
     }
 }
