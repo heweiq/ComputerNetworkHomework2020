@@ -1,5 +1,8 @@
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Stack;
 
 /**
  * Prg5-2 Simulating a computer network using discrete time
@@ -51,7 +54,7 @@ class Prg5_2
             buffer.add(new ArrayList<>());
     }
     public int[] getEverySum() {return everySum;}
-    public int[] getEverySuc() {return everySum;}
+    public int[] getEverySuc() {return everySuc;}
     //单向边
     private void add(int u, int v)
     {
@@ -92,6 +95,7 @@ class Prg5_2
                 ++sum;
             }
             //每个节点flood转发
+            Stack<Pair<Packet,Integer>> stack = new Stack<>();
             for(int u = 1; u <= N; u++)
             {
                 if(buffer.get(u).size() == 0) continue;
@@ -106,8 +110,13 @@ class Prg5_2
                         ++suc;
                         break;
                     }
-                    addPacketInBuffer(packet, v);
+                    stack.push(new Pair<>(packet,v));
                 }
+            }
+            while(!stack.empty())
+            {
+                Pair<Packet,Integer> pair = stack.pop();
+                addPacketInBuffer(pair.getKey(), pair.getValue());
             }
             everySum[t] = sum;
             everySuc[t] = suc;
