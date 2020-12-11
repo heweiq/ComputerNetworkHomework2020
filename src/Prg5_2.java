@@ -27,7 +27,7 @@ class Prg5_2
     private int Siz; //表示buffer的最大容量
     private int tot; //邻接表边数
     private int[] first, next, to; //邻接表
-    private int[] everysum, everysuc; //每个时刻的sum和suc
+    private int[] everySum, everySuc; //每个时刻的sum和suc
     class Packet
     {
         int s,t,ttl;
@@ -50,8 +50,8 @@ class Prg5_2
         for(int i = 0; i <= n; i++)
             buffer.add(new ArrayList<>());
     }
-    public int[] getEverysum() {return everysum;}
-    public int[] getEverysuc() {return everysum;}
+    public int[] getEverySum() {return everySum;}
+    public int[] getEverySuc() {return everySum;}
     //单向边
     private void add(int u, int v)
     {
@@ -67,28 +67,18 @@ class Prg5_2
     }
 
     //某个点的buffer中加入包
-    public void addPacketInBuffer(Packet packet, int x)
+    private void addPacketInBuffer(Packet packet, int x)
     {
         if(buffer.get(x).size() >= Siz) return;
         buffer.get(x).add(packet);
     }
-    //判断该点的buffer中是否有这个包
-    public boolean isInBuffer(Packet packet, int x)
-    {
-        return buffer.get(x).contains(packet);
-    }
-    //某个点的buffer中删除包
-    public void removePacketInBuffer(Packet packet, int x)
-    {
-        buffer.get(x).remove(packet);
-    }
-    //运行一段时间，并绘制出图像
+    //运行一段时间
     void work(int T)
     {
         int sum = 0; //表示包的总数
         int suc = 0; //表示成功到达的包的总数
-        everysum = new int[T + 1];
-        everysuc = new int[T + 1];
+        everySum = new int[T];
+        everySuc = new int[T];
         Random random = new Random();
         for(int t = 0; t < T; t++)
         {
@@ -104,6 +94,7 @@ class Prg5_2
             //每个节点flood转发
             for(int u = 1; u <= N; u++)
             {
+                if(buffer.get(u).size() == 0) continue;
                 Packet packet = buffer.get(u).get(0);
                 buffer.get(u).remove(0);
                 if(--packet.ttl <= 0) continue;
@@ -118,8 +109,8 @@ class Prg5_2
                     addPacketInBuffer(packet, v);
                 }
             }
-            everysum[t] = sum;
-            everysuc[t] = suc;
+            everySum[t] = sum;
+            everySuc[t] = suc;
         }
     }
 }

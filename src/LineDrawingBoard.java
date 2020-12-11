@@ -1,86 +1,65 @@
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
-
 import javafx.application.Application;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
+import javafx.util.Pair;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class LineDrawingBoard extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("My Line Chart");
-        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Month");
-        final LineChart<String,Number> lineChart =
-                new LineChart<String,Number>(xAxis,yAxis);
+        final LineChart<Number,Number> lineChart = new LineChart<>(xAxis,yAxis);
 
         lineChart.setTitle("Stock Monitoring, 2010");
 
-        XYChart.Series<String,Number> series1 = new XYChart.Series<String,Number>();
-        series1.setName("Portfolio 1");
-
-        series1.getData().add(new XYChart.Data<String,Number>("Jan", 23));
-        series1.getData().add(new XYChart.Data("Feb", 14));
-        series1.getData().add(new XYChart.Data("Mar", 15));
-        series1.getData().add(new XYChart.Data("Apr", 24));
-        series1.getData().add(new XYChart.Data("May", 34));
-        series1.getData().add(new XYChart.Data("Jun", 36));
-        series1.getData().add(new XYChart.Data("Jul", 22));
-        series1.getData().add(new XYChart.Data("Aug", 45));
-        series1.getData().add(new XYChart.Data("Sep", 43));
-        series1.getData().add(new XYChart.Data("Oct", 17));
-        series1.getData().add(new XYChart.Data("Nov", 29));
-        series1.getData().add(new XYChart.Data("Dec", 25));
-
-        XYChart.Series<String,Number> series2 = new XYChart.Series<String,Number>();
-        series2.setName("Portfolio 2");
-        series2.getData().add(new XYChart.Data("Jan", 33));
-        series2.getData().add(new XYChart.Data("Feb", 34));
-        series2.getData().add(new XYChart.Data("Mar", 25));
-        series2.getData().add(new XYChart.Data("Apr", 44));
-        series2.getData().add(new XYChart.Data("May", 39));
-        series2.getData().add(new XYChart.Data("Jun", 16));
-        series2.getData().add(new XYChart.Data("Jul", 55));
-        series2.getData().add(new XYChart.Data("Aug", 54));
-        series2.getData().add(new XYChart.Data("Sep", 48));
-        series2.getData().add(new XYChart.Data("Oct", 27));
-        series2.getData().add(new XYChart.Data("Nov", 37));
-        series2.getData().add(new XYChart.Data("Dec", 29));
-
-        XYChart.Series<String,Number> series3 = new XYChart.Series<String,Number>();
-        series3.setName("Portfolio 3");
-        series3.getData().add(new XYChart.Data("Jan", 44));
-        series3.getData().add(new XYChart.Data("Feb", 35));
-        series3.getData().add(new XYChart.Data("Mar", 36));
-        series3.getData().add(new XYChart.Data("Apr", 33));
-        series3.getData().add(new XYChart.Data("May", 31));
-        series3.getData().add(new XYChart.Data("Jun", 26));
-        series3.getData().add(new XYChart.Data("Jul", 22));
-        series3.getData().add(new XYChart.Data("Aug", 25));
-        series3.getData().add(new XYChart.Data("Sep", 43));
-        series3.getData().add(new XYChart.Data("Oct", 44));
-        series3.getData().add(new XYChart.Data("Nov", 45));
-        series3.getData().add(new XYChart.Data("Dec", 44));
+        XYChart.Series<Number,Number> series1 = new XYChart.Series<>();
+        series1.setName("Throughput");
+        for(int i = 0; i < everySuc.length; i++)
+            series1.getData().add(new XYChart.Data(i, everySuc[i]));
 
         Scene scene  = new Scene(lineChart,800,600);
-        lineChart.getData().addAll(series1, series2, series3);
+        lineChart.getData().add(series1);
 
         stage.setScene(scene);
         stage.show();
     }
-    public static void main(String[] args) {
+    static int[] everySum, everySuc;
+    public static void main(String[] args)
+    {
+        int n = 10, siz= 5;
+        Prg5_2 prg5_2 = new Prg5_2(n,siz);
+        Random random = new Random();
+        Map<Pair<Integer,Integer>,Boolean> map = new HashMap<>();
+        for(int i = 0; i < 20; i++)
+        {
+            int u, v;
+            while(true)
+            {
+                u = random.nextInt(n) + 1;
+                v = random.nextInt(n - 1) + 1;
+                if (v == u) ++u;
+                if(!map.containsKey(new Pair<>(u,v)))
+                {
+                    map.put(new Pair<>(u,v), true);
+                    map.put(new Pair<>(v,u), true);
+                    break;
+                }
+            }
+            prg5_2.addEdge(u,v);
+        }
+        prg5_2.work(50);
+        everySum = prg5_2.getEverySum();
+        everySuc = prg5_2.getEverySuc();
         launch(args);
     }
 }
