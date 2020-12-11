@@ -14,6 +14,7 @@ public class Prg5_1
 {
     private int N; //表示点的数量
     private int tot; //邻接表边数
+    private int bandwidth; //带宽，每一次转发都算
     private int[] first, next, to; //邻接表
     private int[][] d; //距离
     public Prg5_1(int n)
@@ -24,6 +25,15 @@ public class Prg5_1
         next = new int[2 + (n * (n - 1) << 1)];
         to = new int[2 + (n * (n - 1) << 1)];
         d = new int[n + 1][n + 1];
+        setBandwidth();
+    }
+    public void setBandwidth()
+    {
+        bandwidth = 0;
+    }
+    public int getBandwidth()
+    {
+        return bandwidth;
     }
     //单向边
     private void add(int u, int v)
@@ -64,7 +74,11 @@ public class Prg5_1
     public int flood1(int counter, int s, int t)
     {
         if(counter == 0) return -1;
-        if(s == t) return 0;
+        if(s == t)
+        {
+            ++bandwidth;
+            return 0;
+        }
         int ret = -1;
         for(int i = first[s]; i != 0; i = next[i])
         {
@@ -84,14 +98,18 @@ public class Prg5_1
     public int flood2(int counter, int s, int t, int lastP)
     {
         if(counter == 0) return -1;
-        if(s == t) return 0;
+        if(s == t)
+        {
+            ++bandwidth;
+            return 0;
+        }
         int ret = -1;
         for(int i = first[s]; i != 0; i = next[i])
         {
             int v = to[i];
             if(v != lastP)
             {
-                int delay = flood1(counter - 1, v, t) + 1;
+                int delay = flood2(counter - 1, v, t, s) + 1;
                 if (delay == 0) continue;
                 if (ret == -1) ret = delay;
                 else if (delay < ret) ret = delay;
@@ -103,7 +121,11 @@ public class Prg5_1
     public int flood3(int counter, int s, int t, int k)
     {
         if(counter == 0) return -1;
-        if(s == t) return 0;
+        if(s == t)
+        {
+            ++bandwidth;
+            return 0;
+        }
         int ret = -1;
         ArrayList<Integer> arrayList = new ArrayList<>();
         for(int i = first[s]; i != 0; i = next[i])
@@ -113,15 +135,15 @@ public class Prg5_1
         Arrays.sort(array);
         for(int tmp,i = 0; i < array.length; i++)
             for(int j = i + 1; j < array.length; j++)
-                if(d[j][t] < d[i][t])
+                if(d[array[j]][t] < d[array[i]][t])
                 {
-                    tmp = d[j][t];
-                    d[j][t] = d[i][t];
-                    d[i][t] = tmp;
+                    tmp = array[j];
+                    array[j] = array[i];
+                    array[i] = tmp;
                 }
         for(int i = 0; i < Math.min(k, array.length); i++)
         {
-            int delay = flood1(counter - 1, array[i], t) + 1;
+            int delay = flood3(counter - 1, array[i], t, k) + 1;
             if(delay == 0) continue;
             if(ret == -1) ret = delay;
             else if(delay < ret) ret = delay;

@@ -18,32 +18,48 @@ public class LineDrawingBoard extends Application {
         stage.setTitle("My Line Chart");
         NumberAxis xAxis0 = new NumberAxis();
         NumberAxis yAxis0 = new NumberAxis();
-        xAxis0.setLabel("Time");
+        xAxis0.setLabel("Interval");
         final LineChart<Number,Number> lineChart0 = new LineChart<>(xAxis0,yAxis0);
         lineChart0.setTitle("1");
-
         XYChart.Series<Number,Number> series1 = new XYChart.Series<>();
         series1.setName("Throughput");
-        for(int i = 0; i < everySuc.length; i += 10)
-        {
-            int y = everySuc[i + 9];
-            if(i != 0) y -= everySuc[i - 1];
-            series1.getData().add(new XYChart.Data(i, y));
-        }
 
         NumberAxis yAxis1 = new NumberAxis();
         final LineChart<Number,Number> lineChart1 = new LineChart<>(xAxis0,yAxis1);
         lineChart1.setTitle("2");
         XYChart.Series<Number,Number> series2 = new XYChart.Series<>();
         series2.setName("Error rate");
-        for(int i = 0; i < everySuc.length; i += 10)
+
+        for(int t = 1; t <= 100; t++)
         {
-            double y1 = everySuc[i + 9];
-            if(i != 0) y1 -= everySuc[i - 1];
-            double y2 = everySum[i + 9];
-            if(i != 0) y2 -= everySum[i - 1];
-            double y = 1 - (y1 / y2);
-            series2.getData().add(new XYChart.Data(i, y));
+            int n = 100, siz = 50;
+            prg5_2 = new Prg5_2(n,siz);
+            Random random = new Random();
+            Map<Pair<Integer,Integer>,Boolean> map = new HashMap<>();
+            for(int i = 0; i < 800; i++)
+            {
+                int u, v;
+                while(true)
+                {
+                    u = random.nextInt(n) + 1;
+                    v = random.nextInt(n - 1) + 1;
+                    if (v == u) ++u;
+                    if(!map.containsKey(new Pair<>(u,v)))
+                    {
+                        map.put(new Pair<>(u,v), true);
+                        map.put(new Pair<>(v,u), true);
+                        break;
+                    }
+                }
+                prg5_2.addEdge(u,v);
+            }
+            prg5_2.Floyed();
+            prg5_2.work(100, t);
+            sum = prg5_2.getSum();
+            suc = prg5_2.getSuc();
+            err = prg5_2.getErr();
+            series1.getData().add(new XYChart.Data(t, suc));
+            series2.getData().add(new XYChart.Data(t, (double)err / sum));
         }
 
         VBox vBox = new VBox();
@@ -55,33 +71,10 @@ public class LineDrawingBoard extends Application {
         stage.setScene(scene);
         stage.show();
     }
-    static int[] everySum, everySuc;
+    static Prg5_2 prg5_2;
+    static int sum, suc, err;
     public static void main(String[] args)
     {
-        int n = 10, siz= 5;
-        Prg5_2 prg5_2 = new Prg5_2(n,siz);
-        Random random = new Random();
-        Map<Pair<Integer,Integer>,Boolean> map = new HashMap<>();
-        for(int i = 0; i < 20; i++)
-        {
-            int u, v;
-            while(true)
-            {
-                u = random.nextInt(n) + 1;
-                v = random.nextInt(n - 1) + 1;
-                if (v == u) ++u;
-                if(!map.containsKey(new Pair<>(u,v)))
-                {
-                    map.put(new Pair<>(u,v), true);
-                    map.put(new Pair<>(v,u), true);
-                    break;
-                }
-            }
-            prg5_2.addEdge(u,v);
-        }
-        prg5_2.work(200);
-        everySum = prg5_2.getEverySum();
-        everySuc = prg5_2.getEverySuc();
         launch(args);
     }
 }
