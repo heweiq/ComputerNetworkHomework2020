@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+//For test Prg5_2
 public class LineDrawingBoard extends Application {
     @Override
     public void start(Stage stage) {
