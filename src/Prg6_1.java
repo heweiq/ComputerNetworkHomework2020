@@ -16,10 +16,52 @@ import java.util.Random;
  */
 public class Prg6_1
 {
+    private int UDPsend(String mess, InetAddress address, int port) throws SocketException
+    {
+        //System.out.println(mess + address + port);
+        /** 1、建立udp socket端点 */
+        DatagramSocket s = new DatagramSocket();
+        /** 2、提供数据，封装打包  ---DatagramPacket(byte[] buf, int length, InetAddress address, int port)  */
+        byte[] bs = mess.getBytes();
+        DatagramPacket dp = new DatagramPacket(bs, bs.length, address, port);
+        /** 3、使用send发送 */
+        try {
+            s.send(dp);
+        }
+        catch (IOException e) {
+            System.out.println("发送失败： ");
+            e.printStackTrace();
+        }
+        /** 4、关闭资源 */
+        int ret = s.getLocalPort();
+        s.close();
+        return ret;
+    }
+    private DatagramPacket UDPaccept(int port)
+    {
+        try
+        {
+            /**1、建立udp socket，设置接收端口*/
+            DatagramSocket ds = new DatagramSocket(port);
+            /**2、预先创建数据存放的位置，封装*/
+            byte[] bbuf = new byte[1024];
+            DatagramPacket dp = new DatagramPacket(bbuf, bbuf.length);
+            /**3、使用receive阻塞式接收*/
+            ds.receive(dp);
+            //System.out.println("ip::"+dp.getAddress().getHostAddress()+"\nport::"+dp.getPort()+"\ndata::"+new String(dp.getData()));
+            /**4、关闭资源*/
+            ds.close();
+            return dp;
+        }
+        catch (IOException e) {
+            System.out.println("发送失败： ");
+            e.printStackTrace();
+        }
+        return null;
+    }
     class Coordinator extends Thread
     {
         private static final int port = 100;
-        private ServerSocket serverSocket;
 
         private static final int MaxN = 100;
         private static final int MaxCnt = 80;
@@ -29,7 +71,6 @@ public class Prg6_1
         private ArrayList<Integer> sessionPorts;
         public Coordinator() throws IOException
         {
-            serverSocket = new ServerSocket(port);
             random = new Random();
             userCounts = new HashMap<>();
             sessionHosts = new ArrayList<>();
@@ -46,13 +87,10 @@ public class Prg6_1
             {
                 try
                 {
-                    //System.out.println("等待远程连接，端口号为：" + serverSocket.getLocalPort() + "...");
-                    Socket server = serverSocket.accept();
-                    //System.out.println("远程主机地址：" + server.getRemoteSocketAddress());
-                    DataInputStream in = new DataInputStream(server.getInputStream());
-                    //System.out.println(in.readUTF());
+                    DatagramPacket dp = UDPaccept(port);
                     int tmp;
-                    String[] inString = in.readUTF().split(" ");
+
+                    String[] inString = new String(dp.getData()).replaceAll("(\\u0000)+$", "").split(" ");
                     String outString = "";
                     switch(inString[0])
                     {
@@ -79,15 +117,8 @@ public class Prg6_1
                             leaveCharSession(tmp);
                             break;
                     }
-                    DataOutputStream out = new DataOutputStream(server.getOutputStream());
                     if(!outString.equals(""))
-                        out.writeUTF(outString);
-                    server.close();
-                }
-                catch(SocketTimeoutException s)
-                {
-                    System.out.println("Socket timed out!");
-                    break;
+                        UDPsend(outString, dp.getAddress(), dp.getPort());
                 }
                 catch(IOException e)
                 {
@@ -193,8 +224,6 @@ public class Prg6_1
         private int id;
         private String serverHost;
         private int serverPort;
-        private DataOutputStream out;
-        private DataInputStream in;
         private final static String coordinatorHost = "127.0.0.1";
         private final static int coordinatorPort = 100;
         Client(String user)
@@ -203,22 +232,6 @@ public class Prg6_1
             id = -1;
             serverHost = "";
             serverPort = -1;
-        }
-        private void connectToCoordinator()
-        {
-            try
-            {
-                Socket socket = new Socket(coordinatorHost,coordinatorPort);
-                //System.out.println("远程主机地址：" + socket.getRemoteSocketAddress());
-                OutputStream outToServer = socket.getOutputStream();
-                out = new DataOutputStream(outToServer);
-                InputStream inFromServer = socket.getInputStream();
-                in = new DataInputStream(inFromServer);
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
         }
         public int getId()
         {
@@ -229,9 +242,9 @@ public class Prg6_1
             if(this.id != -1) leave();
             try
             {
-                connectToCoordinator();
-                out.writeUTF("start");
-                String str[] = in.readUTF().split(" ");
+                int tmp = UDPsend("start",InetAddress.getByName(coordinatorHost),coordinatorPort);
+                DatagramPacket dp = UDPaccept(tmp);
+                String str[] = new String(dp.getData()).replaceAll("(\\u0000)+$", "").split(" ");
                 id = Integer.parseInt(str[0]);
                 if(id != -1)
                 {
@@ -249,9 +262,9 @@ public class Prg6_1
             if(this.id != -1) leave();
             try
             {
-                connectToCoordinator();
-                out.writeUTF("join" + " " + id);
-                String str[] = in.readUTF().split(" ");
+                int tmp = UDPsend("join" + " " + id,InetAddress.getByName(coordinatorHost),coordinatorPort);
+                DatagramPacket dp = UDPaccept(tmp);
+                String str[] = new String(dp.getData()).replaceAll("(\\u0000)+$", "").split(" ");
                 if(str[0].equals("Success"))
                 {
                     serverHost = str[1];
@@ -268,8 +281,7 @@ public class Prg6_1
         {
             try
             {
-                connectToCoordinator();
-                out.writeUTF("leave" + " " + id);
+                UDPsend("leave" + " " + id,InetAddress.getByName(coordinatorHost),coordinatorPort);
             }
             catch(IOException e)
             {
