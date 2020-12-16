@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Random;
 
 public class Main
@@ -45,41 +46,56 @@ public class Main
 
         //System.out.println(Prg5_3.route("192.24.127.2"));
 
-        Prg6_1 prg6_1 = new Prg6_1();
-        Prg6_1.Client client0 = prg6_1.new Client("HWQ");
-        Prg6_1.Client client1 = prg6_1.new Client("WZY");
-        Prg6_1.Client client2 = prg6_1.new Client("YXK");
-        client0.start();
-        client1.join(client0.getId());
-        client0.send("Hello!");
-        System.out.println("1：\r\n" + client0.check());
-        client1.send("Hi!");
-        client0.send("Are you wzy?");
-        client0.send("It's a really good name.");
-        client0.send("I like this name.");
-        client1.send("Thank you!");
-        System.out.println("2：\r\n" + client1.check());
-        client2.join(client1.getId());
-        client2.send("lalala");
-        client0.send("Oh, new guys coming.");
-        client1.send("Welcome!");
-        client0.send("Welcome!");
-        System.out.println("3：\r\n" + client2.check());
-        client2.send("Hello everyone!");
-        client2.send("I need to talk to you alone, WZY.");
-        client2.send("Let's take a new chat room.");
-        client2.send("Sorry, HWQ.");
-        client0.send("No problem.");
-        System.out.println("3：\r\n" + client2.check());
-        client2.leave();
-        client0.leave();
-        client2.start();
-        client1.join(client2.getId());
-        client2.send("Fuck you!");
-        client2.send("Ha Ha Ha!");
-        client2.leave();
-        System.out.println("4：\r\n" + client1.check());
-        client1.send("......");
-        client1.leave();
+        try
+        {
+            Prg6_1 prg6_1 = new Prg6_1();
+            Thread[] serverThread = new Thread[100];
+            for (int i = 0; i < 100; i++) {
+                serverThread[i] = prg6_1.new Server(i);
+                serverThread[i].start();
+            }
+            Thread coordinatorThread = prg6_1.new Coordinator();
+            coordinatorThread.start();
+
+            Prg6_1.Client client0 = prg6_1.new Client("HWQ");
+            Prg6_1.Client client1 = prg6_1.new Client("WZY");
+            Prg6_1.Client client2 = prg6_1.new Client("YXK");
+            client0.start();
+            client1.join(client0.getId());
+            client0.send("Hello!");
+            System.out.println("1：\r\n" + client0.check());
+            client1.send("Hi!");
+            client0.send("Are you wzy?");
+            client0.send("It's a really good name.");
+            client0.send("I like this name.");
+            client1.send("Thank you!");
+            System.out.println("2：\r\n" + client1.check());
+            client2.join(client1.getId());
+            client2.send("lalala");
+            client0.send("Oh, new guys coming.");
+            client1.send("Welcome!");
+            client0.send("Welcome!");
+            System.out.println("3：\r\n" + client2.check());
+            client2.send("Hello everyone!");
+            client2.send("I need to talk to you alone, WZY.");
+            client2.send("Let's take a new chat room.");
+            client2.send("Sorry, HWQ.");
+            client0.send("No problem.");
+            System.out.println("3：\r\n" + client2.check());
+            client2.leave();
+            client0.leave();
+            client2.start();
+            client1.join(client2.getId());
+            client2.send("Fuck you!");
+            client2.send("Ha Ha Ha!");
+            client2.leave();
+            System.out.println("4：\r\n" + client1.check());
+            client1.send("......");
+            client1.leave();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

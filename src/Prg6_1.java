@@ -16,7 +16,7 @@ import java.util.Random;
  */
 public class Prg6_1
 {
-    class Coordinator
+    class Coordinator extends Thread
     {
         private static final int port = 100;
         private ServerSocket serverSocket;
@@ -120,7 +120,7 @@ public class Prg6_1
             }
         }
     }
-    class Server
+    class Server extends Thread
     {
         private int port;
         private ServerSocket serverSocket;
@@ -203,13 +203,17 @@ public class Prg6_1
             id = -1;
             serverHost = "";
             serverPort = -1;
+        }
+        private void connectToCoordinator()
+        {
             try
             {
                 Socket socket = new Socket(coordinatorHost,coordinatorPort);
+                //System.out.println("远程主机地址：" + socket.getRemoteSocketAddress());
                 OutputStream outToServer = socket.getOutputStream();
-                DataOutputStream out = new DataOutputStream(outToServer);
+                out = new DataOutputStream(outToServer);
                 InputStream inFromServer = socket.getInputStream();
-                DataInputStream in = new DataInputStream(inFromServer);
+                in = new DataInputStream(inFromServer);
             }
             catch(IOException e)
             {
@@ -225,6 +229,7 @@ public class Prg6_1
             if(this.id != -1) leave();
             try
             {
+                connectToCoordinator();
                 out.writeUTF("start");
                 String str[] = in.readUTF().split(" ");
                 id = Integer.parseInt(str[0]);
@@ -244,6 +249,7 @@ public class Prg6_1
             if(this.id != -1) leave();
             try
             {
+                connectToCoordinator();
                 out.writeUTF("join" + " " + id);
                 String str[] = in.readUTF().split(" ");
                 if(str[0].equals("Success"))
@@ -262,6 +268,7 @@ public class Prg6_1
         {
             try
             {
+                connectToCoordinator();
                 out.writeUTF("leave" + " " + id);
             }
             catch(IOException e)
